@@ -8,12 +8,14 @@ import (
 	"fmt"
 	"path/filepath"
 	"os"
+	"strings"
 
 	"github.com/itzg/go-flagsfiller"
 )
 
 type Options struct {
-	Select string `usage:"Select which files to rename"`
+	Select   string `usage:"Select which files to rename"`
+	RenameTo string `usage:"Use preferred extension"`
 }
 
 var opts Options
@@ -40,6 +42,10 @@ func main() {
 	for i, file := range files {
 		seq := fmt.Sprintf("%04d", i + 1)
 		filename := fmt.Sprintf("%s%s", seq, filepath.Ext(file))
+
+		if opts.RenameTo != "" {
+			filename = strings.Replace(filename, filepath.Ext(file), opts.RenameTo, 1)
+		}
 
 		newfile := filepath.Join(args[0], filename)
 		err = os.Rename(files[i], newfile)
