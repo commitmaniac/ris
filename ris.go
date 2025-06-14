@@ -4,13 +4,34 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"path/filepath"
 	"os"
+
+	"github.com/itzg/go-flagsfiller"
 )
 
+type Options struct {
+	Select string `usage:"Select which files to rename"`
+}
+
+var opts Options
+
 func main() {
-	path := filepath.Join(os.Args[2], os.Args[1])
+	err := flagsfiller.Parse(&opts)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	args := flag.Args()
+	if len(args) < 1 {
+		flag.Usage()
+		os.Exit(0)
+	}
+
+	path := filepath.Join(args[0], opts.Select)
 	files, err := filepath.Glob(path)
 	if err != nil {
 		panic(err)
@@ -20,7 +41,7 @@ func main() {
 		seq := fmt.Sprintf("%04d", i + 1)
 		filename := fmt.Sprintf("%s%s", seq, filepath.Ext(file))
 
-		newfile := filepath.Join(os.Args[2], filename)
+		newfile := filepath.Join(args[0], filename)
 		err = os.Rename(files[i], newfile)
 		if err != nil {
 			panic(err)
