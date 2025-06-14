@@ -1,3 +1,4 @@
+VERSION  ?= 1.0.0
 RISFLAGS ?= -w -X main.Version="$(VERSION)"
 
 ris: ris.go
