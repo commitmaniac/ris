@@ -16,15 +16,24 @@ import (
 type Options struct {
 	Select   string `usage:"Select which files to rename"`
 	RenameTo string `usage:"Use preferred extension"`
+	Version  bool   `usage:"Print installed version"`
 }
 
-var opts Options
+var (
+	opts Options
+	Version string
+)
 
 func main() {
 	err := flagsfiller.Parse(&opts)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+
+	if opts.Version {
+		fmt.Println(os.Args[0], Version)
+		os.Exit(0)
 	}
 
 	args := flag.Args()

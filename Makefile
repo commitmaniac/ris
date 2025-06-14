@@ -1,5 +1,7 @@
+RISFLAGS ?= -w -X main.Version="$(VERSION)"
+
 ris: ris.go
-	go build -trimpath -o $@
+	go build -ldflags "$(RISFLAGS)" -o $@
 
 .PHONY: clean
 
