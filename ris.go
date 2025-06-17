@@ -17,6 +17,7 @@ type Options struct {
 	Select   string `usage:"Select which files to rename"`
 	RenameTo string `usage:"Use preferred extension"`
 	Version  bool   `usage:"Print installed version"`
+	KeepName bool   `usage:"Keep original filename"`
 }
 
 var (
@@ -48,20 +49,25 @@ func main() {
 		panic(err)
 	}
 
-	for i, file := range files {
-		seq := fmt.Sprintf("%04d", i + 1)
-		filename := fmt.Sprintf("%s%s", seq, filepath.Ext(file))
+	for position, file := range files {
+		basename := strings.TrimSuffix(file, filepath.Ext(file))
+		sequence := fmt.Sprintf("%04d", position + 1)
 
-		if opts.RenameTo != "" {
-			filename = strings.Replace(filename, filepath.Ext(file), opts.RenameTo, 1)
+		newname := fmt.Sprintf("%s%s", sequence, filepath.Ext(file))
+		if opts.KeepName {
+			newname = fmt.Sprintf("%s_%s%s", sequence, basename, filepath.Ext(file))
 		}
 
-		newfile := filepath.Join(args[0], filename)
-		err = os.Rename(files[i], newfile)
+		if opts.RenameTo != "" {
+			newname = strings.Replace(newname, filepath.Ext(file), opts.RenameTo, 1)
+		}
+
+		newfile := filepath.Join(args[0], newname)
+		err = os.Rename(file, newfile)
 		if err != nil {
 			panic(err)
 		}
 
-		println(files[i], "=>", newfile)
+		fmt.Println(file, "=>", newfile)
 	}
 }
