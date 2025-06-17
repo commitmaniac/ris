@@ -4,12 +4,14 @@ else
 VERSION ?= 1.0.0
 endif
 
+BIN ?= ris
+
 RISFLAGS ?= -w -X main.Version="$(VERSION)"
 
-ris: ris.go
+$(BIN): ris.go
 	go build -ldflags "$(RISFLAGS)" -o $@
 
 .PHONY: clean
 
 clean:
-	rm -rf ris
+	rm -rf $(BIN)
