@@ -41,6 +41,8 @@ jobs:
             arch: amd64
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,6 +64,10 @@ jobs:
 
       - name: Build
         run: make
+
+      - name: Strip
+        if: ${{ github.event_name == 'release' }}
+        run: strip ${{ env.BIN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
