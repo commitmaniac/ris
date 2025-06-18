@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - '*.go'
+      - '*.mod'
+      - '*.sum'
+      - 'Makefile'
+      - '.github/workflows/*'
+
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '*.go'
+      - '*.mod'
+      - '*.sum'
+      - 'Makefile'
+      - '.github/workflows/*'
+
+  workflow_dispatch:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    name: Build
+    strategy:
+      matrix:
+        platform:
+          - linux
+        arch:
+          - arm64
+          - amd64
+        include:
+          - platform: windows
+            arch: amd64
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Setup environment
+        run: |
+          echo "GOOS=${{ matrix.platform }}" >> $GITHUB_ENV
+          echo "GOARCH=${{ matrix.arch }}" >> $GITHUB_ENV
+          if [ ${{ matrix.platform }} = 'windows' ]; then
+            echo "BIN=ris-${{ matrix.platform }}-${{ matrix.arch }}.exe" >> $GITHUB_ENV
+          else
+            echo "BIN=ris-${{ matrix.platform }}-${{ matrix.arch }}" >> $GITHUB_ENV
+          fi
+
+      - name: Build
+        run: make
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ris-${{ matrix.platform }}-${{ matrix.arch }}
+          path: ${{ env.BIN }}
+
+      - name: Upload binaries to release
+        if: ${{ github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.BIN }}
