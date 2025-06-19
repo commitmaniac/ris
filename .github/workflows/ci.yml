@@ -61,13 +61,12 @@ jobs:
           else
             echo "BIN=ris-${{ matrix.platform }}-${{ matrix.arch }}" >> $GITHUB_ENV
           fi
+          if [ ${{ github.event_name }} = 'release' ]; then
+            echo "RELEASE=1" >> $GITHUB_ENV
+          fi
 
       - name: Build
         run: make
-
-      - name: Strip
-        if: ${{ github.event_name == 'release' }}
-        run: strip ${{ env.BIN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

@@ -8,6 +8,10 @@ BIN ?= ris
 
 RISFLAGS ?= -w -X main.Version="$(VERSION)"
 
+ifeq ($(RELEASE),1)
+RISFLAGS += -s
+endif
+
 $(BIN): ris.go
 	go build -ldflags "$(RISFLAGS)" -o $@
 
