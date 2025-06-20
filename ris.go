@@ -4,6 +4,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -30,7 +31,11 @@ var (
 )
 
 func RenameFiles(target string, newfile string) {
-	err := os.Rename(target, newfile)
+	_, err := os.Stat(newfile)
+	if errors.Is(err, os.ErrNotExist) {
+		err = os.Rename(target, newfile)
+	}
+
 	if err != nil {
 		panic(err)
 	}
