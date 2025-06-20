@@ -6,8 +6,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"path/filepath"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/itzg/go-flagsfiller"
@@ -19,7 +19,7 @@ type Options struct {
 	Index    int    `usage:"Start at provided index" default:"1"`
 	Version  bool   `usage:"Print installed version"`
 	KeepName bool   `usage:"Keep original filename"`
-	Zfill    int    `usage:"Specify preferred zfill" default:"4"`
+	Zfill    int    `usage:"Use preferred zfill" default:"4"`
 	Offset   int    `usage:"Offset sequence by a specific multiple" default:"1"`
 	Simulate bool   `usage:"Don't actually rename selected files"`
 }
@@ -59,8 +59,8 @@ func main() {
 		os.Exit(0)
 	}
 
-	path := filepath.Join(args[0], opts.Select)
-	files, err := filepath.Glob(path)
+	path_glob := filepath.Join(args[0], opts.Select)
+	files, err := filepath.Glob(path_glob)
 	if err != nil {
 		panic(err)
 	}
@@ -70,16 +70,17 @@ func main() {
 	}
 
 	for position, file := range files {
-		basename := strings.TrimSuffix(file, filepath.Ext(file))
+		file_ext := filepath.Ext(file)
+		basename := strings.TrimSuffix(file, file_ext)
 		sequence := fmt.Sprintf("%0*d", opts.Zfill, (position + opts.Index) * opts.Offset)
 
-		newname := fmt.Sprintf("%s%s", sequence, filepath.Ext(file))
+		newname := fmt.Sprintf("%s%s", sequence, file_ext)
 		if opts.KeepName {
-			newname = fmt.Sprintf("%s_%s%s", sequence, basename, filepath.Ext(file))
+			newname = fmt.Sprintf("%s_%s%s", sequence, basename, file_ext)
 		}
 
 		if opts.RenameTo != "" {
-			newname = strings.Replace(newname, filepath.Ext(file), opts.RenameTo, 1)
+			newname = strings.Replace(newname, file_ext, opts.RenameTo, 1)
 		}
 
 		newfile := filepath.Join(args[0], newname)
