@@ -21,12 +21,20 @@ type Options struct {
 	KeepName bool   `usage:"Keep original filename"`
 	Zfill    int    `usage:"Specify preferred zfill" default:"4"`
 	Offset   int    `usage:"Offset sequence by a specific multiple" default:"1"`
+	Simulate bool   `usage:"Don't actually rename selected files"`
 }
 
 var (
 	opts Options
 	Version string
 )
+
+func RenameFiles(target string, newfile string) {
+	err := os.Rename(target, newfile)
+	if err != nil {
+		panic(err)
+	}
+}
 
 func main() {
 	flag.Usage = func() {
@@ -57,6 +65,10 @@ func main() {
 		panic(err)
 	}
 
+	if opts.Simulate {
+		fmt.Println("WARNING: simulating, no files renamed")
+	}
+
 	for position, file := range files {
 		basename := strings.TrimSuffix(file, filepath.Ext(file))
 		sequence := fmt.Sprintf("%0*d", opts.Zfill, (position + opts.Index) * opts.Offset)
@@ -71,11 +83,10 @@ func main() {
 		}
 
 		newfile := filepath.Join(args[0], newname)
-		err = os.Rename(file, newfile)
-		if err != nil {
-			panic(err)
+		if opts.Simulate {
+			fmt.Println(file, "=>", newfile)
+		} else {
+			RenameFiles(file, newfile)
 		}
-
-		fmt.Println(file, "=>", newfile)
 	}
 }
