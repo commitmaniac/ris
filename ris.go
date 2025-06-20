@@ -30,6 +30,15 @@ var (
 	Version string
 )
 
+func KeepFilename(base string, sequence string, ext string) string {
+	sequence_prefix := fmt.Sprintf("%s_", sequence)
+	if strings.HasPrefix(base, sequence_prefix) {
+		base = strings.TrimPrefix(base, sequence_prefix)
+	}
+
+	return fmt.Sprintf("%s_%s%s", sequence, base, ext)
+}
+
 func RenameFiles(target string, newfile string) {
 	_, err := os.Stat(newfile)
 	if errors.Is(err, os.ErrNotExist) {
@@ -81,7 +90,7 @@ func main() {
 
 		newname := fmt.Sprintf("%s%s", sequence, file_ext)
 		if opts.KeepName {
-			newname = fmt.Sprintf("%s_%s%s", sequence, basename, file_ext)
+			newname = KeepFilename(basename, sequence, file_ext)
 		}
 
 		if opts.RenameTo != "" {
