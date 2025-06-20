@@ -28,6 +28,11 @@ var (
 )
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [OPTIONS] PATH\n", os.Args[0])
+		flag.PrintDefaults()
+	}
+
 	err := flagsfiller.Parse(&opts)
 	if err != nil {
 		fmt.Println(err)
