@@ -19,6 +19,7 @@ type Options struct {
 	Index    int    `usage:"Start at provided index" default:"1"`
 	Version  bool   `usage:"Print installed version"`
 	KeepName bool   `usage:"Keep original filename"`
+	Zfill    int    `usage:"Specify preferred zfill" default:"4"`
 }
 
 var (
@@ -52,7 +53,7 @@ func main() {
 
 	for position, file := range files {
 		basename := strings.TrimSuffix(file, filepath.Ext(file))
-		sequence := fmt.Sprintf("%04d", position + opts.Index)
+		sequence := fmt.Sprintf("%0*d", opts.Zfill, position + opts.Index)
 
 		newname := fmt.Sprintf("%s%s", sequence, filepath.Ext(file))
 		if opts.KeepName {
