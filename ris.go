@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/itzg/go-flagsfiller"
@@ -19,6 +20,7 @@ type Options struct {
 	KeepName bool   `usage:"Keep original filename"`
 	Offset   int    `usage:"Offset sequence by a specific multiple" default:"1"`
 	RenameTo string `usage:"Use preferred file extension"`
+	Reverse  bool   `usage:"Reverse list of selected files"`
 	Select   string `usage:"Select which files to rename"`
 	Simulate bool   `usage:"Simulate operations with selected files"`
 	Version  bool   `usage:"Print installed version"`
@@ -77,6 +79,10 @@ func main() {
 	files, err := filepath.Glob(path_glob)
 	if err != nil {
 		panic(err)
+	}
+
+	if opts.Reverse {
+		slices.Reverse(files)
 	}
 
 	if opts.Simulate {
