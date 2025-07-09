@@ -15,14 +15,14 @@ import (
 )
 
 type Options struct {
-	Select   string `usage:"Select which files to rename"`
-	RenameTo string `usage:"Use preferred extension"`
 	Index    int    `usage:"Start at provided index" default:"1"`
-	Version  bool   `usage:"Print installed version"`
 	KeepName bool   `usage:"Keep original filename"`
-	Zfill    int    `usage:"Use preferred zfill" default:"4"`
 	Offset   int    `usage:"Offset sequence by a specific multiple" default:"1"`
-	Simulate bool   `usage:"Don't actually rename selected files"`
+	RenameTo string `usage:"Use preferred file extension"`
+	Select   string `usage:"Select which files to rename"`
+	Simulate bool   `usage:"Simulate operations with selected files"`
+	Version  bool   `usage:"Print installed version"`
+	Zfill    int    `usage:"Use preferred zfill" default:"4"`
 }
 
 var (
@@ -86,7 +86,8 @@ func main() {
 	for position, file := range files {
 		file_ext := filepath.Ext(file)
 		basename := strings.TrimSuffix(file, file_ext)
-		sequence := fmt.Sprintf("%0*d", opts.Zfill, (position + opts.Index) * opts.Offset)
+		int_sqnc := (position + opts.Index) * opts.Offset
+		sequence := fmt.Sprintf("%0*d", opts.Zfill, int_sqnc)
 
 		newname := fmt.Sprintf("%s%s", sequence, file_ext)
 		if opts.KeepName {
