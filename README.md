@@ -13,6 +13,10 @@ Static binaries are available on the [Releases] page
 
 ## Examples
 
+> [!TIP]
+> Use the `-simulate` flag to see how files will be renamed.
+> Useful when deciding how files should be renamed.
+
 Rename all text files inside the working directory
 
 ```console
@@ -25,7 +29,7 @@ Rename all text files to Markdown files while keeping the original filename
 $ ./ris -select "*.txt" -rename-to ".md" -keep-name .
 ```
 
-# License
+## License
 
 BSD-3-Clause
 
